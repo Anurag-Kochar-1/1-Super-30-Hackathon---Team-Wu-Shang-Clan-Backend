@@ -1,13 +1,6 @@
 ## Authentication Routes
 
 - POST /api/auth/register - Register a new user
-  {
-  "email": "string", // Required, valid email format
-  "password": "string", // Required, min 8 characters
-  "firstName": "string", // Optional
-  "lastName": "string" // Optional
-  }
-
 - POST /api/auth/login - Login user
 - GET /api/auth/me - Get current user profile
 - PUT /api/auth/me - Update user profile
