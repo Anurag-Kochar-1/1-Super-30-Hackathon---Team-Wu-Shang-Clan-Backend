@@ -32,6 +32,16 @@ const certificationSchema = z.object({
 
 export const createResumeSchema = z.object({
   title: z.string().min(1, 'Title is required'),
+  content: z.string().min(1, "Content is required"),
+  // totalExperience: z.number().min(0, 'Experience must be a positive number'),
+  // skills: z.array(z.string()).min(1, 'At least one skill is required'),
+  // workExperience: z.array(workExperienceSchema).min(1, 'At least one work experience is required'),
+  // projects: z.array(projectSchema).min(1, 'At least one project is required'),
+  // education: z.array(educationSchema).optional(),
+  // certifications: z.array(certificationSchema).optional(),
+});
+export const createResumeSchema_2 = z.object({
+  title: z.string().min(1, 'Title is required'),
   totalExperience: z.number().min(0, 'Experience must be a positive number'),
   skills: z.array(z.string()).min(1, 'At least one skill is required'),
   workExperience: z.array(workExperienceSchema).min(1, 'At least one work experience is required'),
@@ -41,13 +51,15 @@ export const createResumeSchema = z.object({
 });
 
 export const updateResumeSchema = z.object({
-  title: z.string().min(1, 'Title is required').optional(),
-  totalExperience: z.number().min(0, 'Experience must be a positive number').optional(),
-  skills: z.array(z.string()).min(1, 'At least one skill is required').optional(),
-  workExperience: z.array(workExperienceSchema).min(1, 'At least one work experience is required').optional(),
-  projects: z.array(projectSchema).min(1, 'At least one project is required').optional(),
-  education: z.array(educationSchema).optional(),
-  certifications: z.array(certificationSchema).optional(),
-}).refine(data => Object.keys(data).length > 0, {
-  message: 'At least one field must be provided',
-});
+  title: z.string().min(1, 'Title is required'),
+  content: z.string().min(1, "Content is required"),
+  // totalExperience: z.number().min(0, 'Experience must be a positive number').optional(),
+  // skills: z.array(z.string()).min(1, 'At least one skill is required').optional(),
+  // workExperience: z.array(workExperienceSchema).min(1, 'At least one work experience is required').optional(),
+  // projects: z.array(projectSchema).min(1, 'At least one project is required').optional(),
+  // education: z.array(educationSchema).optional(),
+  // certifications: z.array(certificationSchema).optional(),
+})
+// .refine(data => Object.keys(data).length > 0, {
+//   message: 'At least one field must be provided',
+// });

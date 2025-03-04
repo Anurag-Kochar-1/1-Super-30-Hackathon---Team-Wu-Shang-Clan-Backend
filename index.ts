@@ -12,6 +12,8 @@ import responseRoutes from './routes/response.routes';
 import chatRoutes from './routes/chat.routes';
 import interviewResultRoutes from './routes/interview-result.routes';
 import userMetricsRoutes from './routes/user-metric.routes';
+import dotenv from "dotenv"
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

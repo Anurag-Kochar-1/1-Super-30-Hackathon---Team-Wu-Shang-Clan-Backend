@@ -1,0 +1,80 @@
+{
+  "title": "Anurag Kochar",
+  "content": "95013-45454 | Anurag-kochar.com | linkedin.com/in/anurag-kochar | github.com/Anurag-Kochar",
+  "totalExperience": 1.5,
+  "skills": [
+    "HTML",
+    "CSS",
+    "Javascript",
+    "Typescript",
+    "React js",
+    "Next js",
+    "Node JS",
+    "Express js",
+    "Nest js",
+    "Redux",
+    "Firebase",
+    "Supabase",
+    "MongoDB",
+    "PostgreSQL",
+    "Git",
+    "Figma",
+    "Premiere pro"
+  ],
+  "workExperience": [
+    {
+      "company": "Cloudinit Private Limited",
+      "position": "Frontend Developer Intern",
+      "startDate": "2023-04",
+      "endDate": "present",
+      "description": "Single-handedly designed and developed the entire front-end using Next JS, Typescript, and Tailwind CSS. Implemented a real-time AI Interview chat page with features such as audio recording and code writing. Developed a user-specific dashboard for three different user types. Worked closely with the CTO to plan and execute backend strategies.",
+      "technologies": ["Next JS", "Typescript", "Tailwind CSS"]
+    },
+    {
+      "company": "Offsta",
+      "position": "Founder and Software Engineer",
+      "startDate": "2021-12",
+      "endDate": "2022-08",
+      "description": "Conducted comprehensive research on various communities and their content to inform product development. Initiated and hosted a ’Squid Tank India’ show to attract initial MVP testers. Led the development and launch of the MVP within a month.",
+      "technologies": []
+    }
+  ],
+  "projects": [
+    {
+      "name": "Operating System Simulator",
+      "description": "Developed a user-friendly interface that allows users to open and drag multiple folders. Integrated gaming functionality into the system. Designed a mobile-friendly UI/UX. Implemented a custom music player for enhanced user experience. Adopted a sci-fi inspired design for the UI/UX.",
+      "technologies": ["Next JS", "Typescript", "Tailwind CSS"],
+      "url": "https://github.com/YourRepoNameForOSSimulator"
+    },
+    {
+      "name": "System Design Puzzles, Node-based Editor",
+      "description": "Developed an interactive node-based editor, Puzzle Board. Integrated a feature for users to solve system design puzzles for preparation. Incorporated AI to provide suggestions and assistance to users. Added a brainstorming feature for users to create an empty board. Implemented a leaderboard to foster competition and boost user confidence.",
+      "technologies": ["Next JS", "Typescript"],
+      "url": "https://github.com/YourRepoNameForPuzzleBoard"
+    },
+    {
+      "name": "CommComm",
+      "description": "Developed CommComm, a community platform for students to build their own communities with free courses via YouTube Playlist. Utilized Next Js + Typescript for development, with Firebase as the backend. Managed states across 15+ pages using Redux toolkit. Implemented Youtube Playlist API for fetching course details. Enhanced user engagement by adding gamification features such as collecting coins and following level-like paths.",
+      "technologies": [
+        "Next JS",
+        "Typescript",
+        "Redux",
+        "Firebase",
+        "Tailwind",
+        "YouTube API"
+      ],
+      "url": "https://github.com/YourRepoNameForCommComm"
+    }
+  ],
+  "education": [
+    {
+      "institution": "Manipal University",
+      "degree": "Bachelor of Computer Applications",
+      "fieldOfStudy": "Computer Applications",
+      "startDate": "2023-01",
+      "endDate": "2026-12"
+    }
+  ],
+  "certifications": [],
+  "achievements": ["Won 6 hackathons"]
+}

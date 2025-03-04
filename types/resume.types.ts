@@ -7,12 +7,13 @@ export interface AuthRequest extends Request {
 
 export interface CreateResumeDto {
     title: string;
-    totalExperience: number;
-    skills: string[];
-    workExperience: WorkExperienceItem[];
-    projects: ProjectItem[];
-    education?: EducationItem[];
-    certifications?: CertificationItem[];
+    content: string;
+    // totalExperience: number;
+    // skills: string[];
+    // workExperience: WorkExperienceItem[];
+    // projects: ProjectItem[];
+    // education?: EducationItem[];
+    // certifications?: CertificationItem[];
 }
 
 export interface UpdateResumeDto {
