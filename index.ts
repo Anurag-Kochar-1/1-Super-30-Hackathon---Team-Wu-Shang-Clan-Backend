@@ -9,6 +9,8 @@ import interviewRoutes from './routes/interview.routes';
 import interviewSessionRoutes from './routes/interview-session.rotues';
 import questionRoutes from './routes/question.routes';
 import responseRoutes from './routes/response.routes';
+import chatRoutes from './routes/chat.routes';
+import interviewResultRoutes from './routes/interview-result.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,8 +25,12 @@ app.use('/api/resumes', resumeRoutes);
 app.use('/api/job-listings', jobListingRoutes);
 app.use('/api/interviews', interviewRoutes);
 app.use('/api/interview-sessions', interviewSessionRoutes);
+app.use('/api/interview-results', interviewResultRoutes);
+
 app.use('/api/interviews/:id/questions', questionRoutes);
 app.use('/api/interview-sessions/:id/responses', responseRoutes);
+app.use('/api/interview-sessions/:id/chat', chatRoutes);
+
 
 
 
