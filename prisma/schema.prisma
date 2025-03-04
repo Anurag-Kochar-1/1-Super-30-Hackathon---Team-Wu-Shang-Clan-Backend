@@ -32,6 +32,7 @@ model Resume {
   totalExperience Float
   workExperience  Json
   projects        Json
+  skills          Json
   education       Json?
   certifications  Json?
   uploadedAt      DateTime    @default(now())

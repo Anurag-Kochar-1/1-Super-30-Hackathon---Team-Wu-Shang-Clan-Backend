@@ -5,13 +5,7 @@
 - GET /api/auth/me - Get current user profile
 - PUT /api/auth/me - Update user profile
 
-## Resume Routes
 
-- GET /api/resumes - Get all resumes for current user
-- GET /api/resumes/:id - Get a specific resume
-- POST /api/resumes - Create a new resume
-- PUT /api/resumes/:id - Update a resume
-- DELETE /api/resumes/:id - Delete a resume
 
 ## Job Listing Routes
 

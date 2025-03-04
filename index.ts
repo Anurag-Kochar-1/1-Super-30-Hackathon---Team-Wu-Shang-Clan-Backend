@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import authRoutes from './routes/auth.routes';
+import resumeRoutes from './routes/resume.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,6 +14,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/resumes', resumeRoutes);
+
 
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
