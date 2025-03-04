@@ -20,40 +20,40 @@ model User {
   updatedAt         DateTime           @updatedAt
   isActive          Boolean            @default(true)
   avatarUrl         String?
-  resumes           Resume[] 
+  resumes           Resume[]
   interviews        Interview[]
-  interviewResults  InterviewResult[] 
-  interviewSessions InterviewSession[] 
+  interviewResults  InterviewResult[]
+  interviewSessions InterviewSession[]
 }
 
 model Resume {
   id              String      @id @default(uuid())
   title           String
-  totalExperience Float 
-  workExperience  Json  
-  projects        Json  
-  education       Json? 
-  certifications  Json? 
+  totalExperience Float
+  workExperience  Json
+  projects        Json
+  education       Json?
+  certifications  Json?
   uploadedAt      DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   userId          String
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  interviews      Interview[] 
+  interviews      Interview[]
 
   @@index([userId])
 }
 
 model JobListing {
   id                 String      @id @default(uuid())
-  url                String 
+  url                String
   title              String
   company            String
   location           String?
   description        String      @db.Text
-  skillsRequired     Json 
-  experienceRequired Float 
-  jobType            String? 
-  salary             String? 
+  skillsRequired     Json
+  experienceRequired Float
+  jobType            String?
+  salary             String?
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
   interviews         Interview[]
@@ -104,20 +104,29 @@ enum QuestionType {
 
 // Interview Session model for storing active interview sessions
 model InterviewSession {
-  id           String        @id @default(uuid())
-  startedAt    DateTime      @default(now())
+  id           String          @id @default(uuid())
+  startedAt    DateTime        @default(now())
   endedAt      DateTime?
+  status       InterviewStatus
   userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   interviewId  String
-  interview    Interview     @relation(fields: [interviewId], references: [id], onDelete: Cascade)
-  isCameraOn   Boolean       @default(true)
-  isMicOn      Boolean       @default(true)
+  interview    Interview       @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  isCameraOn   Boolean         @default(true)
+  isMicOn      Boolean         @default(true)
   chatMessages ChatMessage[]
   responses    Response[]
 
   @@index([userId])
   @@index([interviewId])
+}
+
+enum InterviewStatus {
+  PENDING
+  ONGOING
+  ENDED
+  RESULT_PROCESSING
+  RESULT_PROCESSED
 }
 
 // Chat message model
