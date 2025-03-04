@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +8,177 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String             @unique
+  password          String
+  firstName         String?
+  lastName          String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  isActive          Boolean            @default(true)
+  avatarUrl         String?
+  resumes           Resume[] 
+  interviews        Interview[]
+  interviewResults  InterviewResult[] 
+  interviewSessions InterviewSession[] 
+}
+
+model Resume {
+  id              String      @id @default(uuid())
+  title           String
+  totalExperience Float 
+  workExperience  Json  
+  projects        Json  
+  education       Json? 
+  certifications  Json? 
+  uploadedAt      DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviews      Interview[] 
+
+  @@index([userId])
+}
+
+model JobListing {
+  id                 String      @id @default(uuid())
+  url                String 
+  title              String
+  company            String
+  location           String?
+  description        String      @db.Text
+  skillsRequired     Json 
+  experienceRequired Float 
+  jobType            String? 
+  salary             String? 
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  interviews         Interview[]
+}
+
+// Interview model to store generated mock interviews
+model Interview {
+  id                String             @id @default(uuid())
+  title             String             @default("Mock Interview")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobListingId      String
+  jobListing        JobListing         @relation(fields: [jobListingId], references: [id], onDelete: Cascade)
+  resumeId          String?
+  resume            Resume?            @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  questions         Question[]
+  interviewSessions InterviewSession[]
+  interviewResults  InterviewResult[]
+
+  @@index([userId])
+  @@index([jobListingId])
+  @@index([resumeId])
+}
+
+// Question model for storing interview questions
+model Question {
+  id              String       @id @default(uuid())
+  interviewId     String
+  interview       Interview    @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  content         String       @db.Text
+  order           Int // Question order in the interview
+  type            QuestionType // Type of question (verbal, code)
+  codeSnippet     String?      @db.Text // For code-based questions
+  codeSnippetLang String?
+  expectedAnswer  String?      @db.Text
+  responses       Response[]
+
+  @@index([interviewId])
+}
+
+// Enum for question types
+enum QuestionType {
+  VERBAL
+  CODE
+}
+
+// Interview Session model for storing active interview sessions
+model InterviewSession {
+  id           String        @id @default(uuid())
+  startedAt    DateTime      @default(now())
+  endedAt      DateTime?
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviewId  String
+  interview    Interview     @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  isCameraOn   Boolean       @default(true)
+  isMicOn      Boolean       @default(true)
+  chatMessages ChatMessage[]
+  responses    Response[]
+
+  @@index([userId])
+  @@index([interviewId])
+}
+
+// Chat message model
+model ChatMessage {
+  id                 String           @id @default(uuid())
+  interviewSessionId String
+  interviewSession   InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
+  content            String           @db.Text
+  sentAt             DateTime         @default(now())
+  isFromUser         Boolean          @default(true)
+
+  @@index([interviewSessionId])
+}
+
+model Response {
+  id                 String           @id @default(uuid())
+  interviewSessionId String
+  interviewSession   InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
+  questionId         String
+  question           Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  content            String           @db.Text
+  codeResponse       String?          @db.Text
+  responseTime       Int? // Response time in seconds
+  createdAt          DateTime         @default(now())
+
+  @@index([interviewSessionId])
+  @@index([questionId])
+}
+
+model InterviewResult {
+  id                        String            @id @default(uuid())
+  interviewId               String
+  interview                 Interview         @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  userId                    String
+  user                      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  overallScore              Float // Overall score out of 100
+  performanceSummary        String            @db.Text
+  detailedFeedback          String            @db.Text
+  contentRelevanceScore     Float
+  communicationSkillScore   Float
+  technicalCompetenceScore  Float?
+  problemSolvingScore       Float?
+  responseConsistencyScore  Float
+  depthOfResponseScore      Float
+  criticalThinkingScore     Float
+  behavioralCompetencyScore Float
+  createdAt                 DateTime          @default(now())
+  metrics                   InterviewMetric[]
+
+  @@index([interviewId])
+  @@index([userId])
+}
+
+// Interview Metric model for storing specific performance metrics
+model InterviewMetric {
+  id                String          @id @default(uuid())
+  interviewResultId String
+  interviewResult   InterviewResult @relation(fields: [interviewResultId], references: [id], onDelete: Cascade)
+  name              String
+  score             Float
+  description       String?         @db.Text
+
+  @@index([interviewResultId])
 }
