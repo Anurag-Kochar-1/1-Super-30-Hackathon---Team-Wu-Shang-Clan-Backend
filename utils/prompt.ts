@@ -69,3 +69,37 @@ export const getConvertJobContentToJsonPrompt = ({ jobData }: { jobData: string 
  Just return the JSON format of the resume content.
   `
 }
+
+
+export const getGenerateInterviewQuestionsPrompt = ({ jobData, resumeData }: { jobData: string, resumeData?: string }): string => {
+  return `
+  Generate 10 interview questions based on the job content and the resume content.
+  Here is the question prisma model:
+  model Question {
+  id              String       @id @default(uuid())
+  interviewId     String
+  interview       Interview    @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  content         String       @db.Text
+  order           Int // Question order in the interview
+  type            QuestionType // Type of question (verbal, code)
+  codeSnippet     String?      @db.Text // For code-based questions
+  codeSnippetLang String?
+
+ }
+
+ enum QuestionType {
+  VERBAL
+  CODE
+}
+ Here is the job content:
+ ${jobData}
+
+ Here is the resume content:
+ ${resumeData}
+
+ Generate 5 Verbal questions, 3 resume based questions,  2 job description based questions and 2 code based questions, And return the array of questions. 
+ 
+ question type can be VERBAL or CODE
+ IMPORTANT - Just return the JSON (array of questions) format, DO NOT return any other text.`
+
+}

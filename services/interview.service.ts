@@ -1,5 +1,7 @@
-import { PrismaClient, Interview, QuestionType } from '@prisma/client';
+import { PrismaClient, Interview, QuestionType, Resume, JobListing } from '@prisma/client';
 import { CreateInterviewDto, GeneratedQuestion } from '../types/interview.types';
+import { getGenerateInterviewQuestionsPrompt } from '../utils/prompt';
+import { openai } from '../lib/openai';
 
 const prisma = new PrismaClient();
 
@@ -67,28 +69,28 @@ export class InterviewService {
         });
     }
 
-    /**
-     * Create a new interview
-     */
     async createInterview(
         interviewData: CreateInterviewDto,
         userId: string
     ): Promise<Interview> {
-        // Check if the job listing exists
         const jobListing = await prisma.jobListing.findUnique({
             where: { id: interviewData.jobListingId },
         });
+
+        let resume
 
         if (!jobListing) {
             throw new Error('Job listing not found');
         }
 
-        // Check if resume exists if provided
         if (interviewData.resumeId) {
-            const resume = await prisma.resume.findFirst({
+            console.log(interviewData.resumeId)
+            console.log(userId)
+            resume = await prisma.resume.findFirst({
                 where: {
                     id: interviewData.resumeId,
-                    userId,
+                    // TODO
+                    // userId,
                 },
             });
 
@@ -97,24 +99,21 @@ export class InterviewService {
             }
         }
 
-        // Create the interview
         const interview = await prisma.interview.create({
             data: {
-                title: interviewData.title || `${jobListing.title} Interview`,
+                title: interviewData.title || `${jobListing.title} Mock Interview`,
                 userId,
                 jobListingId: interviewData.jobListingId,
                 resumeId: interviewData.resumeId,
             },
         });
 
-        // Generate questions based on job listing and resume
         const questions = await this.generateInterviewQuestions(
-            jobListing.id,
-            interviewData.resumeId,
+            jobListing,
+            resume!,
             userId
         );
 
-        // Create the questions in the database
         await Promise.all(
             questions.map((question) =>
                 prisma.question.create({
@@ -123,8 +122,8 @@ export class InterviewService {
                         content: question.content,
                         type: question.type,
                         order: question.order,
-                        codeSnippet: question.codeSnippet,
-                        expectedAnswer: question.expectedAnswer,
+                        codeSnippet: question?.codeSnippet,
+                        expectedAnswer: question.expectedAnswer ?? "",
                     },
                 })
             )
@@ -140,41 +139,39 @@ export class InterviewService {
      * you would use OpenAI API or similar to generate relevant questions.
      */
     private async generateInterviewQuestions(
-        jobListingId: string,
-        resumeId?: string,
+        jobListingData: JobListing,
+        resume: Resume,
         userId?: string
     ): Promise<GeneratedQuestion[]> {
-        // Get job listing details
-        const jobListing = await prisma.jobListing.findUnique({
-            where: { id: jobListingId },
+        const prompt = getGenerateInterviewQuestionsPrompt({ jobData: JSON.stringify(jobListingData), resumeData: JSON.stringify(resume) })
+        console.log(`generating questions with prompt: ${prompt}`);
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini-2024-07-18",
+            messages: [{
+                role: "user", content: prompt
+            }],
         });
 
-        if (!jobListing) {
-            throw new Error('Job listing not found');
-        }
+        console.log(`response from openai 👇👇👇`);
 
-        // Get resume details if provided
-        let resume = null;
-        if (resumeId && userId) {
-            resume = await prisma.resume.findFirst({
-                where: {
-                    id: resumeId,
-                    userId,
-                },
-            });
-        }
 
-        // For now, generate dummy questions
-        // In a real implementation, you would analyze the job listing and resume
-        // to generate relevant questions using OpenAI API or similar
-        const questions: GeneratedQuestion[] = [
+        console.log(response?.choices[0].message.content);
+        const questions = JSON.parse(response.choices[0].message.content?.replace(/^```json\s*/, "").replace(/\s*```$/, "")!) as GeneratedQuestion[] | undefined
+
+        console.log(`question😁😁`)
+        console.log(questions)
+        console.log(typeof questions)
+        console.log(`question😁😁`)
+
+
+        const dummyQuestions: GeneratedQuestion[] = [
             {
                 content: "Tell me about your experience with the technologies mentioned in your resume.",
                 type: QuestionType.VERBAL,
                 order: 1,
             },
             {
-                content: `The job description for ${jobListing.title} mentions team collaboration. Can you describe a situation where you worked effectively in a team?`,
+                content: `The job description for ${jobListingData.title} mentions team collaboration. Can you describe a situation where you worked effectively in a team?`,
                 type: QuestionType.VERBAL,
                 order: 2,
             },
@@ -199,11 +196,11 @@ export class InterviewService {
 
         // If the job listing has specific skills required, add relevant technical questions
         if (
-            jobListing.skillsRequired &&
-            Array.isArray(jobListing.skillsRequired) &&
-            (jobListing.skillsRequired as string[]).length > 0
+            jobListingData.skillsRequired &&
+            Array.isArray(jobListingData.skillsRequired) &&
+            (jobListingData.skillsRequired as string[]).length > 0
         ) {
-            const skills = jobListing.skillsRequired as string[];
+            const skills = jobListingData.skillsRequired as string[];
 
             if (skills.includes('React')) {
                 questions.push({
@@ -232,7 +229,7 @@ export class InterviewService {
             }
         }
 
-        return questions;
+        return questions!;
     }
 }
 

@@ -3,10 +3,6 @@ import { AuthRequest, CreateInterviewDto } from '../types/interview.types';
 import interviewService from '../services/interview.service';
 
 export class InterviewController {
-  /**
-   * Create a new interview
-   * POST /api/interviews
-   */
   async createInterview(req: AuthRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {

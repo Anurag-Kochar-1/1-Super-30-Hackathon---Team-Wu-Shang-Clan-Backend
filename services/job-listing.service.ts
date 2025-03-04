@@ -144,46 +144,7 @@ export class JobListingService {
         console.log(typeof trimmedResponse)
         console.log(`trimmedResponse 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆`)
 
-
-
-        const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Freelance'];
-        const randomJobTypeIndex = Math.floor(Math.random() * jobTypes.length);
-        const experienceYears = Math.floor(Math.random() * 5) + 2; // Random between 2-7 years
-
-        return {
-            title: 'Senior Full Stack Developer',
-            company: 'TechCorp Solutions',
-            location: 'San Francisco, CA (Remote)',
-            description: `We're looking for a skilled Full Stack Developer to join our growing team. 
-        You'll be responsible for developing and maintaining web applications, APIs, and 
-        services that power our platform. The ideal candidate has strong experience with 
-        modern JavaScript frameworks, RESTful APIs, and cloud infrastructure.
-
-        Responsibilities:
-        - Build responsive and scalable web applications
-        - Work with cross-functional teams to deliver features
-        - Write clean, maintainable, and well-tested code
-        - Participate in code reviews and technical discussions
-
-        Requirements:
-        - ${experienceYears}+ years of professional software development experience
-        - Strong knowledge of JavaScript/TypeScript, React, and Node.js
-        - Experience with SQL databases and REST APIs
-        - Familiarity with cloud platforms like AWS or Azure`,
-            skillsRequired: [
-                'JavaScript',
-                'TypeScript',
-                'React',
-                'Node.js',
-                'Express',
-                'PostgreSQL',
-                'REST API',
-                'Git'
-            ],
-            experienceRequired: experienceYears,
-            jobType: jobTypes[randomJobTypeIndex],
-            salary: '$120,000 - $150,000'
-        };
+        return trimmedResponse!
     }
 }
 
