@@ -1,5 +1,9 @@
 import { PrismaClient, JobListing } from '@prisma/client';
 import { CreateJobListingDto, ExtractedJobData } from '../types/job-listing.types';
+import puppeteer from 'puppeteer';
+import { getConvertJobContentToJsonPrompt } from '../utils/prompt';
+import { openai } from '../lib/openai';
+import { convert } from "html-to-text"
 
 const prisma = new PrismaClient();
 
@@ -35,10 +39,12 @@ export class JobListingService {
      * Create a new job listing from URL
      */
     async createJobListing(jobData: CreateJobListingDto): Promise<JobListing> {
-        // If we only have a URL, try to extract job information
         if (jobData.url && (!jobData.title || !jobData.company || !jobData.description)) {
             try {
-                const extractedData = await this.extractJobDataFromUrl(jobData.url);
+                const extractedData = await this.convertJobContentToJson(jobData.url);
+
+                console.log(`extractedData 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦`)
+                console.log(extractedData)
 
                 // Merge the extracted data with any provided data
                 jobData = {
@@ -73,16 +79,77 @@ export class JobListingService {
         });
     }
 
-    private async extractJobDataFromUrl(url: string): Promise<ExtractedJobData> {
-        // Log the URL for debugging purposes
+    private async extractJobContentFromUrl(url: string): Promise<string | Error> {
         console.log(`Received job URL: ${url}`);
+        let browser = null;
+        try {
+            browser = await puppeteer.launch({
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
 
-        // Generate some randomness to make the dummy data vary slightly
+            const page = await browser.newPage();
+
+            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+
+            await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+
+            await page.waitForSelector('body', { timeout: 5000 });
+
+            const bodyContent = await page.evaluate(() => {
+                return document.body.innerHTML;
+            });
+
+            console.log(`bodyContent is`)
+            console.log(bodyContent)
+            return bodyContent;
+        } catch (error) {
+            console.log(error)
+            throw new Error('Failed to extract job content from URL');
+        } finally {
+            if (browser) {
+                await browser.close();
+            }
+        }
+
+    }
+
+    private async convertJobContentToJson(url: string): Promise<ExtractedJobData> {
+        const jobContentHtml = await this.extractJobContentFromUrl(url);
+        const jobContentText = convert(jobContentHtml as string, {
+            wordwrap: 120
+        })
+
+        console.log(`jobContentText for LLM ⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩`)
+        console.log(jobContentText)
+        console.log(`ENDING jobContentText for LLM ⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩`)
+
+        const prompt = getConvertJobContentToJsonPrompt({ jobData: jobContentText as string });
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini-2024-07-18",
+            messages: [{
+                role: "user", content: prompt
+            }],
+        });
+
+        const response = completion.choices[0].message.content
+        console.log(`🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦🐦`)
+        console.log(response)
+        console.log(typeof response)
+
+        const trimmedResponse = JSON.parse(response?.replace(/^```json\s*/, "").replace(/\s*```$/, "")!) as ExtractedJobData | undefined
+        console.log(`trimmedResponse 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆`)
+        console.log(trimmedResponse)
+        console.log(typeof trimmedResponse)
+        console.log(`trimmedResponse 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆`)
+
+
+
         const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Freelance'];
         const randomJobTypeIndex = Math.floor(Math.random() * jobTypes.length);
         const experienceYears = Math.floor(Math.random() * 5) + 2; // Random between 2-7 years
 
-        // Return dummy data that looks realistic
         return {
             title: 'Senior Full Stack Developer',
             company: 'TechCorp Solutions',
@@ -91,13 +158,13 @@ export class JobListingService {
         You'll be responsible for developing and maintaining web applications, APIs, and 
         services that power our platform. The ideal candidate has strong experience with 
         modern JavaScript frameworks, RESTful APIs, and cloud infrastructure.
-        
+
         Responsibilities:
         - Build responsive and scalable web applications
         - Work with cross-functional teams to deliver features
         - Write clean, maintainable, and well-tested code
         - Participate in code reviews and technical discussions
-        
+
         Requirements:
         - ${experienceYears}+ years of professional software development experience
         - Strong knowledge of JavaScript/TypeScript, React, and Node.js

@@ -14,6 +14,8 @@ export class JobListingController {
 
             try {
                 const newJobListing = await jobListingService.createJobListing(jobData);
+
+                
                 res.status(201).json(newJobListing);
             } catch (error: any) {
                 if (error.message === 'Failed to extract job data from URL') {

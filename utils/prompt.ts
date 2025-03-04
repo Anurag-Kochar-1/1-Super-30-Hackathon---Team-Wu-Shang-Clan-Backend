@@ -1,5 +1,5 @@
 export const getConvertResumeContentToJsonPrompt = ({ resumeData }: { resumeData: string }) => {
-    return `
+  return `
 convert the resume content to this JSON format:
 type WorkExperience = {
   company: string;
@@ -44,4 +44,28 @@ ${resumeData}
 
 Just return the JSON format of the resume content.
 `
+}
+
+export const getConvertJobContentToJsonPrompt = ({ jobData }: { jobData: string }) => {
+  return `
+  convert the job content to this JSON format:
+  
+  interface JobListing {
+  id: string;
+  url: string;
+  title: string;
+  company: string;
+  location?: string;
+  description: string;
+  skillsRequired: string[]; 
+  experienceRequired: number;
+  jobType?: string;
+  salary?: string;
+ }
+
+  Here is the job content:
+  ${jobData}}
+
+ Just return the JSON format of the resume content.
+  `
 }
