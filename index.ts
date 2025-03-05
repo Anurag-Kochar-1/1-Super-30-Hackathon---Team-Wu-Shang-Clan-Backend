@@ -12,6 +12,7 @@ import responseRoutes from './routes/response.routes';
 import chatRoutes from './routes/chat.routes';
 import interviewResultRoutes from './routes/interview-result.routes';
 import userMetricsRoutes from './routes/user-metric.routes';
+import transcriptionRoutes from './routes/transcription.routes';
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use('/api/metrics', userMetricsRoutes);
 app.use('/api/interviews/:id/questions', questionRoutes);
 app.use('/api/interview-sessions/:id/responses', responseRoutes);
 app.use('/api/interview-sessions/:id/chat', chatRoutes);
+app.use('/api/transcribe', transcriptionRoutes);
+
 
 
 

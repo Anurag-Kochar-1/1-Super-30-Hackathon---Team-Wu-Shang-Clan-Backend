@@ -164,70 +164,69 @@ export class InterviewService {
         console.log(`question😁😁`)
 
 
-        const dummyQuestions: GeneratedQuestion[] = [
-            {
-                content: "Tell me about your experience with the technologies mentioned in your resume.",
-                type: QuestionType.VERBAL,
-                order: 1,
-            },
-            {
-                content: `The job description for ${jobListingData.title} mentions team collaboration. Can you describe a situation where you worked effectively in a team?`,
-                type: QuestionType.VERBAL,
-                order: 2,
-            },
-            {
-                content: "What interests you most about this position?",
-                type: QuestionType.VERBAL,
-                order: 3,
-            },
-            {
-                content: "How do you handle tight deadlines and pressure?",
-                type: QuestionType.VERBAL,
-                order: 4,
-            },
-            {
-                content: "Write a function that finds the maximum value in an array of integers.",
-                type: QuestionType.CODE,
-                order: 5,
-                codeSnippet: "function findMax(arr) {\n  // Your code here\n}",
-                expectedAnswer: "function findMax(arr) {\n  return Math.max(...arr);\n}",
-            },
-        ];
+        // const dummyQuestions: GeneratedQuestion[] = [
+        //     {
+        //         content: "Tell me about your experience with the technologies mentioned in your resume.",
+        //         type: QuestionType.VERBAL,
+        //         order: 1,
+        //     },
+        //     {
+        //         content: `The job description for ${jobListingData.title} mentions team collaboration. Can you describe a situation where you worked effectively in a team?`,
+        //         type: QuestionType.VERBAL,
+        //         order: 2,
+        //     },
+        //     {
+        //         content: "What interests you most about this position?",
+        //         type: QuestionType.VERBAL,
+        //         order: 3,
+        //     },
+        //     {
+        //         content: "How do you handle tight deadlines and pressure?",
+        //         type: QuestionType.VERBAL,
+        //         order: 4,
+        //     },
+        //     {
+        //         content: "Write a function that finds the maximum value in an array of integers.",
+        //         type: QuestionType.CODE,
+        //         order: 5,
+        //         codeSnippet: "function findMax(arr) {\n  // Your code here\n}",
+        //         expectedAnswer: "function findMax(arr) {\n  return Math.max(...arr);\n}",
+        //     },
+        // ];
 
-        // If the job listing has specific skills required, add relevant technical questions
-        if (
-            jobListingData.skillsRequired &&
-            Array.isArray(jobListingData.skillsRequired) &&
-            (jobListingData.skillsRequired as string[]).length > 0
-        ) {
-            const skills = jobListingData.skillsRequired as string[];
+        // if (
+        //     jobListingData.skillsRequired &&
+        //     Array.isArray(jobListingData.skillsRequired) &&
+        //     (jobListingData.skillsRequired as string[]).length > 0
+        // ) {
+        //     const skills = jobListingData.skillsRequired as string[];
 
-            if (skills.includes('React')) {
-                questions.push({
-                    content: "Explain the concept of virtual DOM in React and why it's important.",
-                    type: QuestionType.VERBAL,
-                    order: 6,
-                });
-            }
+        //     if (skills.includes('React')) {
+        //         questions.push({
+        //             content: "Explain the concept of virtual DOM in React and why it's important.",
+        //             type: QuestionType.VERBAL,
+        //             order: 6,
+        //         });
+        //     }
 
-            if (skills.includes('JavaScript') || skills.includes('TypeScript')) {
-                questions.push({
-                    content: "Write a function that returns a Promise which resolves after a specified delay.",
-                    type: QuestionType.CODE,
-                    order: 7,
-                    codeSnippet: "function delay(ms) {\n  // Your code here\n}",
-                    expectedAnswer: "function delay(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}",
-                });
-            }
+        //     if (skills.includes('JavaScript') || skills.includes('TypeScript')) {
+        //         questions.push({
+        //             content: "Write a function that returns a Promise which resolves after a specified delay.",
+        //             type: QuestionType.CODE,
+        //             order: 7,
+        //             codeSnippet: "function delay(ms) {\n  // Your code here\n}",
+        //             expectedAnswer: "function delay(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}",
+        //         });
+        //     }
 
-            if (skills.includes('Node.js')) {
-                questions.push({
-                    content: "Describe the event loop in Node.js and how it enables non-blocking I/O operations.",
-                    type: QuestionType.VERBAL,
-                    order: 8,
-                });
-            }
-        }
+        //     if (skills.includes('Node.js')) {
+        //         questions.push({
+        //             content: "Describe the event loop in Node.js and how it enables non-blocking I/O operations.",
+        //             type: QuestionType.VERBAL,
+        //             order: 8,
+        //         });
+        //     }
+        // }
 
         return questions!;
     }
