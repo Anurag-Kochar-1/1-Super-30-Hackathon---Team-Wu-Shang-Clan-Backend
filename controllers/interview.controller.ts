@@ -11,7 +11,7 @@ export class InterviewController {
       }
 
       const interviewData: CreateInterviewDto = req.body;
-      
+
       try {
         const newInterview = await interviewService.createInterview(
           interviewData,
@@ -46,7 +46,7 @@ export class InterviewController {
       }
 
       const interviews = await interviewService.getAllInterviewsByUserId(req.user.id);
-      
+
       res.status(200).json(interviews);
     } catch (error) {
       console.error('Get all interviews error:', error);
@@ -67,16 +67,33 @@ export class InterviewController {
 
       const interviewId = req.params.id;
       const interview = await interviewService.getInterviewById(interviewId, req.user.id);
-      
+
       if (!interview) {
         res.status(404).json({ message: 'Interview not found' });
         return;
       }
-      
+
       res.status(200).json(interview);
     } catch (error) {
       console.error('Get interview by ID error:', error);
       res.status(500).json({ message: 'Failed to get interview' });
+    }
+  }
+
+  async textToSpeech(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: 'Not authenticated' });
+        return;
+      }
+
+      const text = req.body.text;
+      const { messages } = await interviewService.textToSpeech(text);
+
+      res.status(200).json(messages);
+    } catch (error) {
+      console.error('Text to speech error:', error);
+      res.status(500).json({ message: 'Failed to generate speech' });
     }
   }
 }

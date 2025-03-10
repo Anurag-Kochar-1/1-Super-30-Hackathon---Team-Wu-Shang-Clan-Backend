@@ -17,5 +17,6 @@ router.post(
 router.get('/', interviewController.getAllInterviews);
 
 router.get('/:id', interviewController.getInterviewById);
+router.post('/tts', interviewController.textToSpeech);
 
 export default router;

@@ -2,10 +2,62 @@ import { PrismaClient, Interview, QuestionType, Resume, JobListing } from '@pris
 import { CreateInterviewDto, GeneratedQuestion } from '../types/interview.types';
 import { getGenerateInterviewQuestionsPrompt } from '../utils/prompt';
 import { openai } from '../lib/openai';
+import path from 'path';
+import { promises as fs } from "fs";
+
 
 const prisma = new PrismaClient();
 
+const audioDir = path.join(process.cwd(), "audios");
+
 export class InterviewService {
+    async textToSpeech(text: string) {
+        const API_URL = "https://api.elevenlabs.io/v1/text-to-speech/JBFqnCBsd6RMkjVDRZzb?output_format=mp3_44100_128";
+        const API_KEY = process.env.ELEVEN_LABS_API_KEY;
+
+        try {
+            if (!text) throw new Error("Text is required for text-to-speech conversion.");
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "xi-api-key": API_KEY,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text,
+                    model_id: "eleven_multilingual_v2",
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to generate speech. HTTP Status: ${response.status}`);
+            }
+
+            const buffer = await response.arrayBuffer(); // Convert response to ArrayBuffer
+            const base64Audio = Buffer.from(buffer).toString("base64"); // Convert to Base64 and return
+
+            return {
+                messages: [
+                    {
+                        text: "TEST TEST TEST TETS TEST TEST Hey dear... How was your day?",
+                        // audio: await audioFileToBase64(path.join(audioDir, "intro_0.wav")),
+                        audio: base64Audio,
+                        lipsync: await this.readJsonTranscript(
+                            path.join(audioDir, "intro_0.json")
+                        ),
+                        facialExpression: "smile",
+                        animation: "Talking_1",
+                    },
+                ],
+            }
+
+        } catch (error) {
+            console.error("Error in textToSpeech:", error);
+            throw new Error("Failed to process text-to-speech.");
+        }
+    }
+
     async getAllInterviewsByUserId(userId: string): Promise<Interview[]> {
         return prisma.interview.findMany({
             where: { userId },
@@ -32,9 +84,7 @@ export class InterviewService {
         });
     }
 
-    /**
-     * Get a specific interview by ID
-     */
+
     async getInterviewById(interviewId: string, userId: string): Promise<Interview | null> {
         return prisma.interview.findFirst({
             where: {
@@ -230,6 +280,24 @@ export class InterviewService {
 
         return questions!;
     }
+
+
+    private async readJsonTranscript(file: any) {
+        try {
+            // Check if file exists first
+            await fs.access(file);
+            const data = await fs.readFile(file, "utf8");
+            return JSON.parse(data);
+        } catch (error) {
+            console.error(`Error reading JSON transcript: ${error.message}`);
+            // Create a simple fallback lipsync JSON
+            return {
+                metadata: { duration: 1.0 },
+                mouthCues: [{ start: 0.0, end: 1.0, value: "X" }],
+            };
+        }
+    };
+
 }
 
 export default new InterviewService();
